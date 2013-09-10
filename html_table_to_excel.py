@@ -14,7 +14,7 @@ def html_table_to_excel(table):
         columns = row.split('</td>')
         data[x] = {}
         for (y, col) in enumerate(columns):
-            data[x][y] = col.replace('<tr>', '').replace('<td>', '')
+            data[x][y] = col.replace('<tr>', '').replace('<td>', '').strip()
 
     return data
 
@@ -29,7 +29,13 @@ def export_to_xls(data, title='Sheet1', filename='export.xls'):
 
     for x in sorted(data.iterkeys()):
         for y in sorted(data[x].iterkeys()):
-            worksheet.write(x, y, data[x][y])
+            try:
+                if float(data[x][y]).is_integer():
+                    worksheet.write(x, y, int(float(data[x][y])))
+                else:
+                    worksheet.write(x, y, float(data[x][y]))
+            except ValueError:
+                worksheet.write(x, y, data[x][y])
 
     workbook.save(filename)
 
