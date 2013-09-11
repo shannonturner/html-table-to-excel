@@ -1,6 +1,6 @@
 from xlsxwriter.workbook import Workbook
 
-def export_to_xlsx(data, chart={}, filename='export.xlsx'):
+def export_to_xlsx(data, chart={}, filename='export.xlsx', reverse=False):
 
     """ export_to_xlsx(data, chart, filename): Exports data to an Excel Spreadsheet.
     Data should be a dictionary with rows as keys; the values of which should be a dictionary with columns as keys; the value should be the value at the x, y coordinate.
@@ -12,20 +12,21 @@ def export_to_xlsx(data, chart={}, filename='export.xlsx'):
         cell
         x_offset
         y_offset
+    Reverse is used to signal whether to reverse the row order or not (except for the header/first row)
     """
 
     workbook = Workbook(filename)
     worksheet = workbook.add_worksheet()
-   
-    for x in sorted(data.iterkeys()):
+
+    for (row, x) in enumerate([sorted(data.keys())[0]] + list(reversed(sorted(data.keys()[1:])))) if reverse is True else enumerate(sorted(data.iterkeys())):
         for y in sorted(data[x].iterkeys()):
             try:
                 if float(data[x][y]).is_integer():
-                    worksheet.write(x, y, int(float(data[x][y])))
+                    worksheet.write(x if reverse is False else row, y, int(float(data[x][y])))
                 else:
-                    worksheet.write(x, y, float(data[x][y]))
+                    worksheet.write(x if reverse is False else row, y, float(data[x][y]))
             except ValueError:
-                worksheet.write(x, y, data[x][y])
+                worksheet.write(x if reverse is False else row, y, '' if data[x][y] == '---' else data[x][y])
 
     if chart is not {}:
 
