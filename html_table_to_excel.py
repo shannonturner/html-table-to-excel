@@ -9,9 +9,9 @@ def html_table_to_excel(table):
 
     table = table[table.index('<tr>'):table.index('</table>')]
 
-    rows = table.split('</tr>')
+    rows = table.strip('\n').split('</tr>')[:-1]
     for (x, row) in enumerate(rows):   
-        columns = row.split('</td>')
+        columns = row.strip('\n').split('</td>')[:-1] 
         data[x] = {}
         for (y, col) in enumerate(columns):
             data[x][y] = col.replace('<tr>', '').replace('<td>', '').strip()
